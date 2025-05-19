@@ -26,18 +26,37 @@ def tfidf_keywords(messages, top_n=5):
     ranked_terms = sorted(zip(terms, scores), key=lambda x: x[1], reverse=True)
     return ranked_terms[:top_n]
 
+def clean_and_tokenize(messages):
+    stop_words = set(stopwords.words('english'))
+    words = re.findall(r'\b\w+\b', ' '.join(messages).lower())
+    filtered = [w for w in words if w not in stop_words and w not in string.punctuation]
+    return filtered
+
+def get_frequent_keywords(words, top_n=5):
+    return Counter(words).most_common(top_n)
+
 def generate_summary(user_msgs, ai_msgs, use_tfidf=True):
     total_msgs = len(user_msgs) + len(ai_msgs)
     combined = user_msgs + ai_msgs
     if use_tfidf:
        keywords = tfidf_keywords(combined)
-    
+    else:
+       tokens = clean_and_tokenize(combined)
+       keywords = get_frequent_keywords(tokens)
+       
+    summary = f"""
+                Summary:
+                - The conversation had {total_msgs} exchanges.
+                - Messages from user: {len(user_msgs)}, from AI: {len(ai_msgs)}.
+                - Most common keywords: {', '.join(k[0] for k in keywords)}
+                """
+    return summary
 
 def process_chat_file(use_tfidf=True):
     lines = read_chat_log('text.txt')
     user_msgs, ai_msgs = parse_chat(lines)
     summary = generate_summary(user_msgs , ai_msgs , use_tfidf=use_tfidf)
-    print(user_msgs , ai_msgs)
+    print(summary)
 
 
 def main():
