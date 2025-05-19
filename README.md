@@ -68,6 +68,6 @@ AI: TF-IDF stands for Term Frequency-Inverse Document Frequency...
 Make sure you've installed the dependencies on requirements.txt, then run:
 
 ```
-python your_script_name.py
+python regular_expression.py (Script Name)
 ```
 
